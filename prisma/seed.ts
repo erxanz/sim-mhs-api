@@ -1,6 +1,6 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
-import { PrismaClient } from "../src/generated/prisma/client.js";
+import { PrismaClient, type Role } from "../src/generated/prisma/client.js";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
 const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });
@@ -15,7 +15,7 @@ const ROLES = [
   { kodeRole: "MAHASISWA", namaRole: "Mahasiswa", keterangan: "Akses data diri sendiri" },
 ];
 
-async function upsertRole(kodeRole, namaRole, keterangan) {
+async function upsertRole(kodeRole: string, namaRole: string, keterangan: string) {
   return prisma.role.upsert({
     where: { kodeRole },
     update: { namaRole, keterangan },
@@ -23,7 +23,19 @@ async function upsertRole(kodeRole, namaRole, keterangan) {
   });
 }
 
-async function upsertPengguna({ username, password, namaLengkap, email, idRole, idUniversitas, idFakultas, idProgramStudi, noHp }) {
+interface UpsertPenggunaInput {
+  username: string;
+  password: string;
+  namaLengkap: string;
+  email?: string;
+  idRole: number;
+  idUniversitas?: bigint;
+  idFakultas?: bigint;
+  idProgramStudi?: bigint;
+  noHp?: string;
+}
+
+async function upsertPengguna({ username, password, namaLengkap, email, idRole, idUniversitas, idFakultas, idProgramStudi, noHp }: UpsertPenggunaInput) {
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
   return prisma.pengguna.upsert({
     where: { username },
@@ -45,7 +57,7 @@ async function upsertPengguna({ username, password, namaLengkap, email, idRole, 
 async function main() {
   console.log("Menjalankan seed...");
 
-  const roles = {};
+  const roles: Record<string, Role> = {};
   for (const role of ROLES) {
     roles[role.kodeRole] = await upsertRole(role.kodeRole, role.namaRole, role.keterangan);
   }
@@ -119,7 +131,7 @@ async function main() {
     },
   });
 
-  await prisma.programStudi.upsert({
+  const mt = await prisma.programStudi.upsert({
     where: { idFakultas_kodeProgramStudi: { idFakultas: feb.id, kodeProgramStudi: "MT" } },
     update: { namaProgramStudi: "Manajemen", jenjang: "S1", statusAktif: "Aktif" },
     create: {
@@ -225,9 +237,7 @@ async function main() {
       tanggalLahir: new Date("2004-04-18"),
       tanggalMasuk: new Date("2022-09-01"),
       alamat: "Jl. Diponegoro No. 21, Medan",
-      idProgramStudi: await prisma.programStudi
-        .findFirst({ where: { kodeProgramStudi: "MT" }, select: { id: true } })
-        .then((r) => r.id),
+      idProgramStudi: mt.id,
       statusMahasiswa: "Aktif",
     },
   ];

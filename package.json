@@ -46,11 +46,13 @@
     "@electric-sql/pglite": "^0.5.8",
     "@electric-sql/pglite-socket": "^0.2.11",
     "@prisma/adapter-pg": "^7.10.0",
+    "@types/bcrypt": "^6.0.0",
     "nodemon": "^3.1.14",
     "pg": "^8.23.1",
     "prisma": "^7.10.0",
     "supertest": "^7.3.1",
     "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
     "vitest": "^5.0.3"
   }
 }
