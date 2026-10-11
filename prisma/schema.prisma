@@ -1,0 +1,159 @@
+// SIM Mahasiswa UMB - Prisma schema
+// Dipetakan 1:1 dari neon_sim_mahasiswa_schema.sql (PostgreSQL / Neon).
+// Kolom & relasi TIDAK dikarang: setiap field memakai nama kolom asli via @map.
+
+generator client {
+  provider             = "prisma-client"
+  output               = "../src/generated/prisma"
+  moduleFormat         = "esm"
+  // Prisma 7 hanya mendukung ekstensi ts/mts/cts. Runtime Node memakai `tsx`
+  // (lihat package.json -> scripts.dev/start) untuk meng-import client TS ini.
+  generatedFileExtension = "ts"
+}
+
+// Prisma 7: URL koneksi TIDAK lagi dideklarasikan di schema.
+// Lihat prisma.config.ts -> datasource.url (migrasi) dan src/config/prisma.js
+// (runtime, via driver adapter @prisma/adapter-neon dengan DATABASE_URL).
+datasource db {
+  provider = "postgresql"
+}
+
+model Universitas {
+  id            BigInt   @id @default(autoincrement()) @map("id_universitas")
+  kodeUniversitas String @unique @db.VarChar(20) @map("kode_universitas")
+  namaUniversitas String @db.VarChar(200) @map("nama_universitas")
+  slogan        String?  @db.VarChar(255)
+  alamat        String?  @db.Text
+  kota          String?  @db.VarChar(100)
+  provinsi      String?  @db.VarChar(100)
+  kodePos       String?  @db.VarChar(10) @map("kode_pos")
+  website       String?  @db.VarChar(255)
+  email         String?  @db.VarChar(150)
+  telepon       String?  @db.VarChar(50)
+  createdAt     DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt     DateTime @default(now()) @db.Timestamptz(3) @map("updated_at")
+
+  fakultas  Fakultas[]
+  pengguna  Pengguna[]
+
+  @@map("universitas")
+}
+
+model Fakultas {
+  id             BigInt   @id @default(autoincrement()) @map("id_fakultas")
+  idUniversitas  BigInt   @map("id_universitas")
+  universitas    Universitas @relation(fields: [idUniversitas], references: [id])
+  kodeFakultas   String   @db.VarChar(20) @map("kode_fakultas")
+  namaFakultas   String   @db.VarChar(200) @map("nama_fakultas")
+  createdAt      DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt      DateTime @default(now()) @db.Timestamptz(3) @map("updated_at")
+
+  programStudi ProgramStudi[]
+  pengguna     Pengguna[]
+
+  @@unique([idUniversitas, kodeFakultas])
+  @@map("fakultas")
+}
+
+model ProgramStudi {
+  id              BigInt   @id @default(autoincrement()) @map("id_program_studi")
+  idFakultas      BigInt   @map("id_fakultas")
+  fakultas        Fakultas @relation(fields: [idFakultas], references: [id])
+  kodeProgramStudi String  @db.VarChar(20) @map("kode_program_studi")
+  namaProgramStudi String  @db.VarChar(200) @map("nama_program_studi")
+  jenjang         String   @default("S1") @db.VarChar(20)
+  statusAktif     String   @default("Aktif") @db.VarChar(20) @map("status_aktif")
+  createdAt       DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt       DateTime @default(now()) @db.Timestamptz(3) @map("updated_at")
+
+  mahasiswa Mahasiswa[]
+  pengguna  Pengguna[]
+
+  @@unique([idFakultas, kodeProgramStudi])
+  @@map("program_studi")
+}
+
+model Role {
+  id        Int     @id @default(autoincrement()) @db.SmallInt @map("id_role")
+  kodeRole  String  @unique @db.VarChar(30) @map("kode_role")
+  namaRole  String  @db.VarChar(100) @map("nama_role")
+  keterangan String? @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+
+  pengguna Pengguna[]
+
+  @@map("roles")
+}
+
+model Pengguna {
+  id            BigInt   @id @default(autoincrement()) @map("id_pengguna")
+  idRole        Int      @map("id_role")
+  role          Role     @relation(fields: [idRole], references: [id])
+  idUniversitas BigInt?  @map("id_universitas")
+  universitas   Universitas? @relation(fields: [idUniversitas], references: [id])
+  idFakultas    BigInt?  @map("id_fakultas")
+  fakultas      Fakultas? @relation(fields: [idFakultas], references: [id])
+  idProgramStudi BigInt? @map("id_program_studi")
+  programStudi  ProgramStudi? @relation(fields: [idProgramStudi], references: [id])
+  username      String   @unique @db.VarChar(100)
+  passwordHash  String   @db.VarChar(255) @map("password_hash")
+  namaLengkap   String   @db.VarChar(200) @map("nama_lengkap")
+  email         String?  @db.VarChar(150)
+  noHp          String?  @db.VarChar(30) @map("no_hp")
+  statusAktif   String   @default("Aktif") @db.VarChar(20) @map("status_aktif")
+  lastLogin     DateTime? @db.Timestamptz(3) @map("last_login")
+  createdAt     DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt     DateTime @default(now()) @db.Timestamptz(3) @map("updated_at")
+
+  mahasiswa Mahasiswa?
+  auditLogs AuditLog[]
+
+  @@index([idRole])
+  @@index([idUniversitas])
+  @@index([idFakultas])
+  @@index([idProgramStudi])
+  @@map("pengguna")
+}
+
+model Mahasiswa {
+  id              BigInt   @id @default(autoincrement()) @map("id_mahasiswa")
+  idPengguna      BigInt?  @unique @map("id_pengguna")
+  pengguna        Pengguna? @relation(fields: [idPengguna], references: [id], onDelete: SetNull)
+  idProgramStudi  BigInt   @map("id_program_studi")
+  programStudi    ProgramStudi @relation(fields: [idProgramStudi], references: [id])
+  npm             String   @unique @db.VarChar(30)
+  namaMahasiswa   String   @db.VarChar(200) @map("nama_mahasiswa")
+  jenisKelamin    String   @db.Char(1) @map("jenis_kelamin")
+  tempatLahir     String?  @db.VarChar(100) @map("tempat_lahir")
+  tanggalLahir    DateTime? @db.Date @map("tanggal_lahir")
+  tanggalMasuk    DateTime @db.Date @map("tanggal_masuk")
+  alamat          String?  @db.Text
+  statusMahasiswa String   @default("Aktif") @db.VarChar(30) @map("status_mahasiswa")
+  // URL publik + key penyimpanan; binary gambar TIDAK disimpan di PostgreSQL.
+  fotoUrl         String?  @db.Text @map("foto_url")
+  fotoStorageKey  String?  @db.Text @map("foto_storage_key")
+  createdAt       DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt       DateTime @default(now()) @db.Timestamptz(3) @map("updated_at")
+
+  @@index([idProgramStudi])
+  @@index([statusMahasiswa])
+  @@map("mahasiswa")
+}
+
+model AuditLog {
+  id         BigInt   @id @default(autoincrement()) @map("id_audit")
+  idPengguna BigInt?  @map("id_pengguna")
+  pengguna   Pengguna? @relation(fields: [idPengguna], references: [id], onDelete: SetNull)
+  tabelNama  String   @db.VarChar(100) @map("tabel_nama")
+  recordId   String?  @db.VarChar(100) @map("record_id")
+  aksi       String   @db.VarChar(10)
+  dataLama   Json?    @map("data_lama")
+  dataBaru   Json?    @map("data_baru")
+  ipAddress  String?  @db.Inet @map("ip_address")
+  userAgent  String?  @db.Text @map("user_agent")
+  waktu      DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([idPengguna, waktu(sort: Desc)])
+  @@index([tabelNama, recordId])
+  @@map("audit_log")
+}

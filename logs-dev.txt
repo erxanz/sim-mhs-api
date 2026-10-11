@@ -1,0 +1,95 @@
+
+> sim-mhs-api@1.0.0 dev
+> tsx watch src/server.js
+
+SIM Mahasiswa API berjalan di http://localhost:4000
+Swagger UI: http://localhost:4000/api-docs
+prisma:error 
+Invalid `prisma.universitas.create()` invocation:
+
+
+Unique constraint failed on the fields: (`kode_universitas`)
+prisma:error 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+Raw query failed. Code: `42703`. Message: `column m.jenis_kelamin_text does not exist`
+[ERROR] GET /api/v1/reports/mahasiswa-per-prodi PrismaClientKnownRequestError: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+Raw query failed. Code: `42703`. Message: `column m.jenis_kelamin_text does not exist`
+    at vn.handleRequestError (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:238:13)
+    at vn.handleAndLogRequestError (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:184:12)
+    at vn.request (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:153:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:1014:24)
+    at async Module.mahasiswaPerProdi (file:///D:/belajar-nextjs16/sim-mhs-api/src/services/report.service.js:21:16)
+    at async file:///D:/belajar-nextjs16/sim-mhs-api/src/routes/report.routes.js:12:33 {
+  code: 'P2010',
+  meta: {
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PrismaNeonAdapter.onError (file:///D:/belajar-nextjs16/sim-mhs-api/node_modules/@prisma/adapter-neon/dist/index.mjs:565:11)
+        at PrismaNeonAdapter.performIO (file:///D:/belajar-nextjs16/sim-mhs-api/node_modules/@prisma/adapter-neon/dist/index.mjs:560:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaNeonAdapter.queryRaw (file:///D:/belajar-nextjs16/sim-mhs-api/node_modules/@prisma/adapter-neon/dist/index.mjs:492:30)
+        at async <anonymous> (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:200:28)
+        at async e.run (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:115:40)
+        at async e.execute (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async yr.request (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:510:22)
+        at async Object.singleLoader (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:113:26)
+        at async vn.request (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:150:14) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.0'
+}
+prisma:error 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+Raw query failed. Code: `42703`. Message: `column m.jenis_kelamin_text does not exist`
+[ERROR] GET /api/v1/reports/mahasiswa-per-prodi PrismaClientKnownRequestError: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+Raw query failed. Code: `42703`. Message: `column m.jenis_kelamin_text does not exist`
+    at vn.handleRequestError (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:238:13)
+    at vn.handleAndLogRequestError (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:184:12)
+    at vn.request (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:153:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:1014:24)
+    at async Module.mahasiswaPerProdi (file:///D:/belajar-nextjs16/sim-mhs-api/src/services/report.service.js:21:16)
+    at async file:///D:/belajar-nextjs16/sim-mhs-api/src/routes/report.routes.js:12:33 {
+  code: 'P2010',
+  meta: {
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PrismaNeonAdapter.onError (file:///D:/belajar-nextjs16/sim-mhs-api/node_modules/@prisma/adapter-neon/dist/index.mjs:565:11)
+        at PrismaNeonAdapter.performIO (file:///D:/belajar-nextjs16/sim-mhs-api/node_modules/@prisma/adapter-neon/dist/index.mjs:560:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaNeonAdapter.queryRaw (file:///D:/belajar-nextjs16/sim-mhs-api/node_modules/@prisma/adapter-neon/dist/index.mjs:492:30)
+        at async <anonymous> (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:200:28)
+        at async e.run (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:115:40)
+        at async e.execute (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async yr.request (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:510:22)
+        at async Object.singleLoader (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:113:26)
+        at async vn.request (D:\belajar-nextjs16\sim-mhs-api\node_modules\@prisma\client\src\runtime\RequestHandler.ts:150:14) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.0'
+}
+10:23:52 PM [tsx] change in ./src\services\report.service.js Restarting...
+SIM Mahasiswa API berjalan di http://localhost:4000
+Swagger UI: http://localhost:4000/api-docs
+10:24:12 PM [tsx] change in ./src\services\report.service.js Restarting...
+SIM Mahasiswa API berjalan di http://localhost:4000
+Swagger UI: http://localhost:4000/api-docs
+prisma:error 
+Invalid `prisma.universitas.create()` invocation:
+
+
+Unique constraint failed on the fields: (`kode_universitas`)
+10:28:45 PM [tsx] change in ./src\app.js Restarting...
+SIM Mahasiswa API berjalan di http://localhost:4000
+Swagger UI: http://localhost:4000/api-docs
