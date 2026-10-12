@@ -108,14 +108,16 @@ export async function rekapitulasi(query = {}, auth = {}) {
   const isDekanat = auth.role === "DEKANAT" || auth.role === "ADMIN_DEKANAT";
   const isProdiStaff = auth.role === "KAPRODI" || auth.role === "ADMIN_PRODI";
 
-  if (isDekanat && auth.idFakultas) {
-    where.programStudi = { idFakultas: BigInt(auth.idFakultas) };
-  } else if (isProdiStaff && auth.idProgramStudi) {
+  if (isProdiStaff && auth.idProgramStudi) {
     where.idProgramStudi = BigInt(auth.idProgramStudi);
-  }
-
-  // Filter Prodi
-  if (id_prodi && id_prodi !== "" && id_prodi !== "0") {
+  } else if (isDekanat && auth.idFakultas) {
+    where.programStudi = { idFakultas: BigInt(auth.idFakultas) };
+    if (id_prodi && id_prodi !== "" && id_prodi !== "0") {
+      try {
+        where.idProgramStudi = BigInt(id_prodi);
+      } catch (e) {}
+    }
+  } else if (id_prodi && id_prodi !== "" && id_prodi !== "0") {
     try {
       where.idProgramStudi = BigInt(id_prodi);
     } catch (e) {}
@@ -240,15 +242,17 @@ export async function rekapitulasiDosen(query = {}, auth = {}) {
   const isDekanat = auth.role === "DEKANAT" || auth.role === "ADMIN_DEKANAT";
   const isProdiStaff = auth.role === "KAPRODI" || auth.role === "ADMIN_PRODI";
 
-  // Dekanat dibatasi hanya dosen pada fakultasnya
-  if (isDekanat && auth.idFakultas) {
-    where.idFakultas = BigInt(auth.idFakultas);
-  } else if (isProdiStaff && auth.idProgramStudi) {
+  // Dekanat dibatasi hanya dosen pada fakultasnya, Kaprodi hanya pada prodinya
+  if (isProdiStaff && auth.idProgramStudi) {
     where.idProgramStudi = BigInt(auth.idProgramStudi);
-  }
-
-  // Filter Prodi
-  if (id_prodi && id_prodi !== "" && id_prodi !== "0") {
+  } else if (isDekanat && auth.idFakultas) {
+    where.idFakultas = BigInt(auth.idFakultas);
+    if (id_prodi && id_prodi !== "" && id_prodi !== "0") {
+      try {
+        where.idProgramStudi = BigInt(id_prodi);
+      } catch (e) {}
+    }
+  } else if (id_prodi && id_prodi !== "" && id_prodi !== "0") {
     try {
       where.idProgramStudi = BigInt(id_prodi);
     } catch (e) {}
