@@ -303,6 +303,15 @@ export const openApiSpec = {
         responses: { 200: { description: "OK" }, 400: errorResponse, 401: errorResponse },
       },
     },
+    "/public/landing": {
+      get: {
+        tags: ["Public"],
+        summary: "Data publik halaman beranda (profil kampus, statistik, fakultas & prodi)",
+        description: "Tanpa autentikasi. Tidak mengekspos data pribadi mahasiswa/pengguna.",
+        security: [],
+        responses: { 200: { description: "OK" } },
+      },
+    },
     "/universitas": crudPath("Universitas", "universitas", "#/components/schemas/Universitas", {
       listParams: [{ name: "kota", in: "query", schema: { type: "string" } }],
     }),

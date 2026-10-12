@@ -11,8 +11,7 @@ import * as service from "../services/universitas.service.js";
 
 const router = Router();
 
-router.use(authenticate);
-
+// Endpoint publik: siapa saja (termasuk publik landing page) dapat melihat data profil universitas
 router.get("/", validate(universitasListQuery, "query"), async (req, res) => {
   res.json({ success: true, ...(await service.list(req.valid)) });
 });
@@ -21,16 +20,21 @@ router.get("/:id", validate(idParam, "params"), async (req, res) => {
   res.json({ success: true, data: await service.getById(req.valid.id) });
 });
 
-router.post("/", authorize("ADMIN"), validate(createUniversitasSchema), async (req, res) => {
+// Endpoint terproteksi: hanya ADMIN yang berhak menambah, mengubah, atau menghapus profil universitas
+router.use(authenticate);
+router.use(authorize("ADMIN"));
+
+router.post("/", validate(createUniversitasSchema), async (req, res) => {
   res.status(201).json({ success: true, data: await service.create(req, req.valid) });
 });
 
-router.patch("/:id", authorize("ADMIN"), validate(idParam, "params"), validate(updateUniversitasSchema), async (req, res) => {
+router.patch("/:id", validate(idParam, "params"), validate(updateUniversitasSchema), async (req, res) => {
   res.json({ success: true, data: await service.update(req, req.valid.id, req.valid) });
 });
 
-router.delete("/:id", authorize("ADMIN"), validate(idParam, "params"), async (req, res) => {
+router.delete("/:id", validate(idParam, "params"), async (req, res) => {
   res.json({ success: true, data: await service.remove(req, req.valid.id) });
 });
 
 export default router;
+

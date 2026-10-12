@@ -8,6 +8,7 @@ import penggunaRoutes from "./pengguna.routes.js";
 import mahasiswaRoutes from "./mahasiswa.routes.js";
 import auditLogRoutes from "./audit-log.routes.js";
 import reportRoutes from "./report.routes.js";
+import publicRoutes from "./public.routes.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/audit-logs", auditLogRoutes);
 router.use("/audit-log", auditLogRoutes);
 router.use("/reports", reportRoutes);
 router.use("/report", reportRoutes);
+router.use("/public", publicRoutes);
 
 export default router;

@@ -18,8 +18,14 @@ describe("SIM Mahasiswa API - smoke", () => {
     expect(res.body.error.code).toBe("NOT_FOUND");
   });
 
-  it("GET /api/v1/universitas tanpa token mengembalikan 401", async () => {
+  it("GET /api/v1/universitas tanpa token dapat diakses publik (200)", async () => {
     const res = await request(app).get("/api/v1/universitas");
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+  });
+
+  it("POST /api/v1/universitas tanpa token mengembalikan 401", async () => {
+    const res = await request(app).post("/api/v1/universitas").send({});
     expect(res.status).toBe(401);
     expect(res.body.error.code).toBe("UNAUTHORIZED");
   });
