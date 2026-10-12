@@ -171,10 +171,47 @@ async function main() {
     password: "Dosen123!",
     namaLengkap: "Dr. Budi Santoso, M.Kom.",
     email: "dosen01@mercu.ac.id",
+    noHp: "081234567801",
     idRole: roles.DOSEN.id,
     idUniversitas: universitas.id,
     idFakultas: ft.id,
     idProgramStudi: ti.id,
+  });
+
+  await upsertPengguna({
+    username: "dosen02",
+    password: "Dosen123!",
+    namaLengkap: "Dr. Ir. Siti Nurhaliza, M.T.",
+    email: "siti.nurhaliza@mercu.ac.id",
+    noHp: "081234567802",
+    idRole: roles.DOSEN.id,
+    idUniversitas: universitas.id,
+    idFakultas: ft.id,
+    idProgramStudi: si.id,
+  });
+
+  await upsertPengguna({
+    username: "dosen03",
+    password: "Dosen123!",
+    namaLengkap: "Ahmad Fauzi, S.Kom., M.Cs.",
+    email: "ahmad.fauzi@mercu.ac.id",
+    noHp: "081234567803",
+    idRole: roles.DOSEN.id,
+    idUniversitas: universitas.id,
+    idFakultas: ft.id,
+    idProgramStudi: ti.id,
+  });
+
+  await upsertPengguna({
+    username: "dosen04",
+    password: "Dosen123!",
+    namaLengkap: "Dr. Maya Indah, S.E., M.M.",
+    email: "maya.indah@mercu.ac.id",
+    noHp: "081234567804",
+    idRole: roles.DOSEN.id,
+    idUniversitas: universitas.id,
+    idFakultas: feb.id,
+    idProgramStudi: mt.id,
   });
 
   const mhsPengguna = await upsertPengguna({

@@ -225,3 +225,100 @@ export async function rekapitulasi(query = {}, auth = {}) {
     prodiList,
   };
 }
+
+export async function rekapitulasiDosen(query = {}, auth = {}) {
+  const { id_prodi, status_aktif, q } = query;
+
+  const dosenRole = await prisma.role.findUnique({
+    where: { kodeRole: "DOSEN" },
+  });
+
+  const where = {
+    ...(dosenRole ? { idRole: dosenRole.id } : { role: { kodeRole: "DOSEN" } }),
+  };
+
+  const isDekanat = auth.role === "DEKANAT" || auth.role === "ADMIN_DEKANAT";
+  const isProdiStaff = auth.role === "KAPRODI" || auth.role === "ADMIN_PRODI";
+
+  // Dekanat dibatasi hanya dosen pada fakultasnya
+  if (isDekanat && auth.idFakultas) {
+    where.idFakultas = BigInt(auth.idFakultas);
+  } else if (isProdiStaff && auth.idProgramStudi) {
+    where.idProgramStudi = BigInt(auth.idProgramStudi);
+  }
+
+  // Filter Prodi
+  if (id_prodi && id_prodi !== "" && id_prodi !== "0") {
+    try {
+      where.idProgramStudi = BigInt(id_prodi);
+    } catch (e) {}
+  }
+
+  // Filter Status Aktif
+  if (status_aktif && status_aktif !== "Semua") {
+    where.statusAktif = status_aktif;
+  }
+
+  // Filter Pencarian
+  if (q) {
+    where.OR = [
+      { username: { contains: q, mode: "insensitive" } },
+      { namaLengkap: { contains: q, mode: "insensitive" } },
+      { email: { contains: q, mode: "insensitive" } },
+    ];
+  }
+
+  const rows = await prisma.pengguna.findMany({
+    where,
+    include: {
+      fakultas: true,
+      programStudi: true,
+      role: true,
+    },
+    orderBy: { namaLengkap: "asc" },
+  });
+
+  const dosenList = rows.map((d) => ({
+    id: d.id.toString(),
+    username: d.username,
+    namaLengkap: d.namaLengkap,
+    email: d.email || "-",
+    noHp: d.noHp || "-",
+    statusAktif: d.statusAktif,
+    idFakultas: d.idFakultas ? d.idFakultas.toString() : null,
+    namaFakultas: d.fakultas?.namaFakultas || "-",
+    kodeFakultas: d.fakultas?.kodeFakultas || "-",
+    idProgramStudi: d.idProgramStudi ? d.idProgramStudi.toString() : null,
+    namaProgramStudi: d.programStudi?.namaProgramStudi || "-",
+    kodeProgramStudi: d.programStudi?.kodeProgramStudi || "-",
+    jenjang: d.programStudi?.jenjang || "-",
+    createdAt: d.createdAt ? d.createdAt.toISOString() : null,
+  }));
+
+  // Daftar prodi untuk filter dropdown
+  const prodiWhere = {};
+  if (isDekanat && auth.idFakultas) {
+    prodiWhere.idFakultas = BigInt(auth.idFakultas);
+  } else if (isProdiStaff && auth.idProgramStudi) {
+    prodiWhere.id = BigInt(auth.idProgramStudi);
+  }
+
+  const prodiRows = await prisma.programStudi.findMany({
+    where: prodiWhere,
+    orderBy: { namaProgramStudi: "asc" },
+  });
+
+  const prodiList = prodiRows.map((p) => ({
+    id: p.id.toString(),
+    kodeProgramStudi: p.kodeProgramStudi,
+    namaProgramStudi: p.namaProgramStudi,
+    jenjang: p.jenjang,
+  }));
+
+  return {
+    dosen: dosenList,
+    total: dosenList.length,
+    totalAktif: dosenList.filter((d) => d.statusAktif === "Aktif").length,
+    prodiList,
+  };
+}

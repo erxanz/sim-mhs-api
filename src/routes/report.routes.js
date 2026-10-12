@@ -15,6 +15,10 @@ router.get("/rekapitulasi", async (req, res) => {
   res.json({ success: true, data: await service.rekapitulasi(req.query, req.auth) });
 });
 
+router.get("/dosen", async (req, res) => {
+  res.json({ success: true, data: await service.rekapitulasiDosen(req.query, req.auth) });
+});
+
 router.get("/mahasiswa-per-prodi", validate(reportListQuery, "query"), async (req, res) => {
   res.json({ success: true, ...(await service.mahasiswaPerProdi(req.valid)) });
 });

@@ -405,6 +405,19 @@ export const openApiSpec = {
         responses: { 200: { description: "OK" } },
       },
     },
+    "/reports/dosen": {
+      get: {
+        tags: ["Reports"],
+        summary: "Daftar dan rekapitulasi data dosen (terisolasi per fakultas untuk Dekanat)",
+        security: bearerSecurity,
+        parameters: [
+          { name: "id_prodi", in: "query", schema: { type: "integer" } },
+          { name: "status_aktif", in: "query", schema: { type: "string" } },
+          { name: "q", in: "query", schema: { type: "string" } },
+        ],
+        responses: { 200: { description: "OK" } },
+      },
+    },
     "/reports/mahasiswa-per-prodi": {
       get: {
         tags: ["Reports"],
