@@ -19,6 +19,8 @@ router.use("/roles", rolesRoutes);
 router.use("/pengguna", penggunaRoutes);
 router.use("/mahasiswa", mahasiswaRoutes);
 router.use("/audit-logs", auditLogRoutes);
+router.use("/audit-log", auditLogRoutes);
 router.use("/reports", reportRoutes);
+router.use("/report", reportRoutes);
 
 export default router;

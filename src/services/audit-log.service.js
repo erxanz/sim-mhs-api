@@ -1,9 +1,17 @@
+import net from "node:net";
 import { prisma } from "../config/prisma.js";
 import { buildMeta, buildOrderBy } from "../utils/pagination.js";
 
 function clientIp(req) {
-  const ip = req?.ip ?? req?.socket?.remoteAddress ?? null;
-  return ip ? ip.replace(/^::ffff:/, "") : null;
+  const raw =
+    req?.headers?.["x-forwarded-for"] ??
+    req?.headers?.["x-real-ip"] ??
+    req?.ip ??
+    req?.socket?.remoteAddress ??
+    null;
+  if (!raw) return null;
+  const candidate = String(raw).split(",")[0].trim().replace(/^::ffff:/, "");
+  return net.isIP(candidate) ? candidate : null;
 }
 
 export async function writeAudit(

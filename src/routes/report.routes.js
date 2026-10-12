@@ -6,7 +6,14 @@ import * as service from "../services/report.service.js";
 
 const router = Router();
 
-router.use(authenticate, authorize("ADMIN", "BAAK", "DOSEN"));
+router.use(
+  authenticate,
+  authorize("ADMIN", "REKTORAT", "DEKANAT", "BAAK", "DOSEN", "KAPRODI", "ADMIN_PRODI", "ADMIN_DEKANAT")
+);
+
+router.get("/rekapitulasi", async (req, res) => {
+  res.json({ success: true, data: await service.rekapitulasi(req.query, req.auth) });
+});
 
 router.get("/mahasiswa-per-prodi", validate(reportListQuery, "query"), async (req, res) => {
   res.json({ success: true, ...(await service.mahasiswaPerProdi(req.valid)) });

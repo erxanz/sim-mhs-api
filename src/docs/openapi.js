@@ -391,6 +391,20 @@ export const openApiSpec = {
         responses: { 200: paginated("#/components/schemas/AuditLog"), 401: errorResponse },
       },
     },
+    "/reports/rekapitulasi": {
+      get: {
+        tags: ["Reports"],
+        summary: "Rekapitulasi data mahasiswa lengkap beserta statistik dan list prodi",
+        security: bearerSecurity,
+        parameters: [
+          { name: "status", in: "query", schema: { type: "string" } },
+          { name: "id_prodi", in: "query", schema: { type: "integer" } },
+          { name: "tahun", in: "query", schema: { type: "integer" } },
+          { name: "q", in: "query", schema: { type: "string" } },
+        ],
+        responses: { 200: { description: "OK" } },
+      },
+    },
     "/reports/mahasiswa-per-prodi": {
       get: {
         tags: ["Reports"],

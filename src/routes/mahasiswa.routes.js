@@ -17,7 +17,17 @@ import * as reportService from "../services/report.service.js";
 const router = Router();
 
 const AKSEN_TULIS = ["ADMIN", "BAAK"];
-const AKSEN_BACA = ["ADMIN", "BAAK", "DOSEN", "MAHASISWA"];
+const AKSEN_BACA = [
+  "ADMIN",
+  "BAAK",
+  "DOSEN",
+  "MAHASISWA",
+  "REKTORAT",
+  "DEKANAT",
+  "KAPRODI",
+  "ADMIN_PRODI",
+  "ADMIN_DEKANAT",
+];
 
 router.use(authenticate);
 

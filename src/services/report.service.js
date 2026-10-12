@@ -98,3 +98,123 @@ export async function statistikMahasiswa() {
     perProdi,
   };
 }
+
+export async function rekapitulasi(query = {}, auth = {}) {
+  const { status, id_prodi, tahun, q } = query;
+
+  const where = {};
+
+  // Limitasi role (Dekanat hanya melihat fakultasnya, Kaprodi/Admin Prodi hanya prodinya)
+  if (auth.role === "DEKANAT" && auth.idFakultas) {
+    where.programStudi = { idFakultas: BigInt(auth.idFakultas) };
+  } else if ((auth.role === "KAPRODI" || auth.role === "ADMIN_PRODI") && auth.idProgramStudi) {
+    where.idProgramStudi = BigInt(auth.idProgramStudi);
+  }
+
+  // Filter Prodi
+  if (id_prodi) {
+    where.idProgramStudi = BigInt(id_prodi);
+  }
+
+  // Filter Status
+  if (status && status !== "Semua") {
+    where.statusMahasiswa = status;
+  }
+
+  // Filter Tahun Masuk
+  if (tahun) {
+    const yearNum = parseInt(tahun, 10);
+    if (!isNaN(yearNum)) {
+      const startDate = new Date(`${yearNum}-01-01T00:00:00.000Z`);
+      const endDate = new Date(`${yearNum}-12-31T23:59:59.999Z`);
+      where.tanggalMasuk = { gte: startDate, lte: endDate };
+    }
+  }
+
+  // Filter Pencarian (NPM / Nama)
+  if (q) {
+    where.OR = [
+      { npm: { contains: q, mode: "insensitive" } },
+      { namaMahasiswa: { contains: q, mode: "insensitive" } },
+    ];
+  }
+
+  // Ambil data mahasiswa
+  const rows = await prisma.mahasiswa.findMany({
+    where,
+    include: {
+      programStudi: {
+        include: {
+          fakultas: true,
+        },
+      },
+    },
+    orderBy: [
+      { tanggalMasuk: "desc" },
+      { namaMahasiswa: "asc" },
+    ],
+  });
+
+  const mahasiswaList = rows.map((m) => ({
+    id: m.id.toString(),
+    npm: m.npm,
+    namaMahasiswa: m.namaMahasiswa,
+    jenisKelamin: m.jenisKelamin,
+    tempatLahir: m.tempatLahir,
+    tanggalLahir: m.tanggalLahir ? m.tanggalLahir.toISOString().split("T")[0] : null,
+    tanggalMasuk: m.tanggalMasuk ? m.tanggalMasuk.toISOString().split("T")[0] : null,
+    statusMahasiswa: m.statusMahasiswa,
+    idProgramStudi: m.idProgramStudi.toString(),
+    namaProgramStudi: m.programStudi?.namaProgramStudi || "-",
+    kodeProgramStudi: m.programStudi?.kodeProgramStudi || "-",
+    namaFakultas: m.programStudi?.fakultas?.namaFakultas || "-",
+    kodeFakultas: m.programStudi?.fakultas?.kodeFakultas || "-",
+  }));
+
+  // Hitung statistik status dalam lingkup filter (tanpa terpotong oleh filter status tunggal)
+  const statsWhere = { ...where };
+  delete statsWhere.statusMahasiswa;
+
+  const grouped = await prisma.mahasiswa.groupBy({
+    by: ["statusMahasiswa"],
+    where: statsWhere,
+    _count: { _all: true },
+  });
+
+  const stats = {
+    Aktif: 0,
+    Cuti: 0,
+    Lulus: 0,
+    "Drop Out": 0,
+    total: 0,
+  };
+
+  for (const g of grouped) {
+    stats[g.statusMahasiswa] = g._count._all;
+    stats.total += g._count._all;
+  }
+
+  // Ambil daftar prodi untuk opsi dropdown filter
+  const prodiWhere = {};
+  if (auth.role === "DEKANAT" && auth.idFakultas) {
+    prodiWhere.idFakultas = BigInt(auth.idFakultas);
+  }
+
+  const prodiRows = await prisma.programStudi.findMany({
+    where: prodiWhere,
+    orderBy: { namaProgramStudi: "asc" },
+  });
+
+  const prodiList = prodiRows.map((p) => ({
+    id: p.id.toString(),
+    kodeProgramStudi: p.kodeProgramStudi,
+    namaProgramStudi: p.namaProgramStudi,
+    jenjang: p.jenjang,
+  }));
+
+  return {
+    mahasiswa: mahasiswaList,
+    stats,
+    prodiList,
+  };
+}

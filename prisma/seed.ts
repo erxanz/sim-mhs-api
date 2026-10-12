@@ -13,6 +13,11 @@ const ROLES = [
   { kodeRole: "BAAK", namaRole: "Bagian Akademik", keterangan: "Kelola data akademik dan mahasiswa" },
   { kodeRole: "DOSEN", namaRole: "Dosen", keterangan: "Akses baca data akademik" },
   { kodeRole: "MAHASISWA", namaRole: "Mahasiswa", keterangan: "Akses data diri sendiri" },
+  { kodeRole: "REKTORAT", namaRole: "Rektorat", keterangan: "Akses pimpinan universitas dan eksekutif" },
+  { kodeRole: "DEKANAT", namaRole: "Dekanat", keterangan: "Akses pimpinan fakultas" },
+  { kodeRole: "KAPRODI", namaRole: "Kaprodi", keterangan: "Ketua Program Studi" },
+  { kodeRole: "ADMIN_PRODI", namaRole: "Admin Prodi", keterangan: "Operator Administrasi Program Studi" },
+  { kodeRole: "ADMIN_DEKANAT", namaRole: "Admin Dekanat", keterangan: "Operator Administrasi Dekanat / Fakultas" },
 ];
 
 async function upsertRole(kodeRole: string, namaRole: string, keterangan: string) {
@@ -183,6 +188,57 @@ async function main() {
     idProgramStudi: ti.id,
   });
 
+  await upsertPengguna({
+    username: "rektor",
+    password: "Rektor123!",
+    namaLengkap: "Prof. Dr. Ir. Herman Susilo, M.Sc.",
+    email: "rektor@mercu.ac.id",
+    idRole: roles.REKTORAT.id,
+    idUniversitas: universitas.id,
+  });
+
+  await upsertPengguna({
+    username: "dekan_fti",
+    password: "Dekan123!",
+    namaLengkap: "Dr. Hendra Gunawan, S.T., M.T.",
+    email: "dekan.fti@mercu.ac.id",
+    idRole: roles.DEKANAT.id,
+    idUniversitas: universitas.id,
+    idFakultas: ft.id,
+  });
+
+  await upsertPengguna({
+    username: "adm_dekanat",
+    password: "AdmDekan123!",
+    namaLengkap: "Staff Administrasi FTI",
+    email: "adm.fti@mercu.ac.id",
+    idRole: roles.ADMIN_DEKANAT.id,
+    idUniversitas: universitas.id,
+    idFakultas: ft.id,
+  });
+
+  await upsertPengguna({
+    username: "kaprodi_ti",
+    password: "Kaprodi123!",
+    namaLengkap: "Dr. Ratna Sari, M.Kom.",
+    email: "kaprodi.ti@mercu.ac.id",
+    idRole: roles.KAPRODI.id,
+    idUniversitas: universitas.id,
+    idFakultas: ft.id,
+    idProgramStudi: ti.id,
+  });
+
+  await upsertPengguna({
+    username: "adm_prodi_ti",
+    password: "AdmProdi123!",
+    namaLengkap: "Operator Prodi TI",
+    email: "adm.ti@mercu.ac.id",
+    idRole: roles.ADMIN_PRODI.id,
+    idUniversitas: universitas.id,
+    idFakultas: ft.id,
+    idProgramStudi: ti.id,
+  });
+
   const daftarMahasiswa = [
     {
       npm: "2021101001",
@@ -260,11 +316,16 @@ async function main() {
   }
 
   console.log("Seed selesai.");
-  console.log("Akun demo:");
-  console.log("  admin      / Admin123!   (ADMIN)");
-  console.log("  baak       / Baak123!    (BAAK)");
-  console.log("  dosen01    / Dosen123!   (DOSEN)");
-  console.log("  mhs001     / Mhs12345!   (MAHASISWA)");
+  console.log("Daftar Akun Pengguna per Role:");
+  console.log("  ADMIN         : admin        / Admin123!    (Administrator)");
+  console.log("  BAAK          : baak         / Baak123!     (Bagian Akademik)");
+  console.log("  DOSEN         : dosen01      / Dosen123!    (Dosen)");
+  console.log("  MAHASISWA     : mhs001       / Mhs12345!    (Mahasiswa)");
+  console.log("  REKTORAT      : rektor       / Rektor123!   (Rektorat)");
+  console.log("  DEKANAT       : dekan_fti    / Dekan123!    (Dekanat)");
+  console.log("  ADMIN_DEKANAT : adm_dekanat  / AdmDekan123! (Admin Dekanat)");
+  console.log("  KAPRODI       : kaprodi_ti   / Kaprodi123!  (Kaprodi)");
+  console.log("  ADMIN_PRODI   : adm_prodi_ti / AdmProdi123! (Admin Prodi)");
   console.log(`  admin id: ${admin.id}`);
 }
 
