@@ -105,15 +105,20 @@ export async function rekapitulasi(query = {}, auth = {}) {
   const where = {};
 
   // Limitasi role (Dekanat hanya melihat fakultasnya, Kaprodi/Admin Prodi hanya prodinya)
-  if (auth.role === "DEKANAT" && auth.idFakultas) {
+  const isDekanat = auth.role === "DEKANAT" || auth.role === "ADMIN_DEKANAT";
+  const isProdiStaff = auth.role === "KAPRODI" || auth.role === "ADMIN_PRODI";
+
+  if (isDekanat && auth.idFakultas) {
     where.programStudi = { idFakultas: BigInt(auth.idFakultas) };
-  } else if ((auth.role === "KAPRODI" || auth.role === "ADMIN_PRODI") && auth.idProgramStudi) {
+  } else if (isProdiStaff && auth.idProgramStudi) {
     where.idProgramStudi = BigInt(auth.idProgramStudi);
   }
 
   // Filter Prodi
-  if (id_prodi) {
-    where.idProgramStudi = BigInt(id_prodi);
+  if (id_prodi && id_prodi !== "" && id_prodi !== "0") {
+    try {
+      where.idProgramStudi = BigInt(id_prodi);
+    } catch (e) {}
   }
 
   // Filter Status
@@ -196,8 +201,10 @@ export async function rekapitulasi(query = {}, auth = {}) {
 
   // Ambil daftar prodi untuk opsi dropdown filter
   const prodiWhere = {};
-  if (auth.role === "DEKANAT" && auth.idFakultas) {
+  if (isDekanat && auth.idFakultas) {
     prodiWhere.idFakultas = BigInt(auth.idFakultas);
+  } else if (isProdiStaff && auth.idProgramStudi) {
+    prodiWhere.id = BigInt(auth.idProgramStudi);
   }
 
   const prodiRows = await prisma.programStudi.findMany({
