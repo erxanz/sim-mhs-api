@@ -180,7 +180,7 @@ Dokumentasi Swagger UI: `http://localhost:3000/docs`
 
 ### 1. Autentikasi (`/auth`)
 * `POST /auth/login` — Login pengguna (mengembalikan Bearer JWT token & profil pengguna).
-* `GET /auth/profile` — Mengambil data akun yang sedang login (*Authorization: Bearer <token>*).
+* `GET /auth/me` — Mengambil data akun yang sedang login (*Authorization: Bearer <token>*).
 * `POST /auth/refresh` — Memperbarui token autentikasi.
 * `POST /auth/logout` — Logout dan invalidasi sesi.
 
